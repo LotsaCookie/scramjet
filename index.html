@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <base href="https://frogiesarcade.win/">
+        <title>Study.com | embed</title>
+        <link rel="manifest" href="/stuff/json/alsomanifest.json"/>
+        <link rel="icon" href="/stuff/logo.png">
+        <link rel="stylesheet" href="/stuff/css/styles.css">
+        <link rel="stylesheet" href="/stuff/css/alert.css">
+        <link rel="icon" href="/stuff/logo.png">
+        <meta property="og:title" content="IXL | Math, Language Arts, Science, Social Studies, and Spanish">
+        <meta property="og:site_name" content="IXL Learning"/>
+        <meta name="theme-color" content="#00ffa6">
+        <meta name="msapplication-TileColor" content="#00ffa6">
+        <meta property="og:image" content="/stuff/logo.png">
+        <meta name="description" content="IXL is the world's most popular subscription-based learning site for K–12. Used by over 17 million students, IXL provides personalized learning in more than 17,000 topics, covering math, language arts, science, social studies, and Spanish. Interactive questions, awards, and certificates keep kids motivated as they master skills.">
+        <meta property="og:description" content="IXL is the world's most popular subscription-based learning site for K–12. Used by over 17 million students, IXL provides personalized learning in more than 17,000 topics, covering math, language arts, science, social studies, and Spanish. Interactive questions, awards, and certificates keep kids motivated as they master skills.">
+        <script src="/v2fer/4lsavenz.js"></script>
+        <script src="/stuff/js/embed.js" defer></script>
+    </head>
+    <body style="background-color: black;">
+        <div id="fadeout">
+        <div id="loadingbox">
+            <h1 id="theh1">deploying proxy....</h1>
+            <p id="thep">this might take a bit</p>
+        </div>
+            <span class="loader"></span>
+        <div id="teacher-setup-dialogs-container"></div>
+    </div>
+        <iframe id="embedframe" allowfullscreen></iframe>
+        <script src="/stuff/js/particles.js"></script>
+        <script src="/stuff/js/embedparticles.js"></script>
+        <script>
+          function lowtaperfade(){
+            document.getElementById('fadeout').style = "opacity: 0;"
+          }
+          function highslipperybuzz(){
+            document.getElementById('fadeout').style = "opacity: 1;"
+            document.getElementById('theh1').innerText = "this is taking a while..."
+            document.getElementById('thep').innerText = "the server might be overloaded, or the requested site is slow right now."
+          }
+        </script>
+        <style>
+          #embedframe{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            margin: 0;
+          }
+          #loadingbox{
+            position: absolute;
+            z-index: 9999;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  border-radius: 35px;
+  color: white;
+  padding: 30px;
+  line-height: 1.8;
+  overflow: clip;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+          }
+            .loader {
+  width: 100%;
+  height: 4.8px;
+  display: inline-block;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  border-radius: 10px;
+  z-index: 9999;
+  left: -0;
+  bottom: 0;
+  padding: 0;
+  margin: none;
+}
+.loader::after {
+  content: '';
+  width: 192px;
+  height: 4.8px;
+  background: #FFF;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  animation: animloader 2s linear infinite;
+  z-index: 9999;
+  bottom: 0;
+  padding: 0;
+  margin: none;
+}
+#fadeout{
+    transition: all ease-in-out .4s;
+}
+#teacher-setup-dialogs-container{
+  filter: drop-shadow(0px 0px 10px #ffffff);
+}
+@keyframes animloader {
+  0% {
+    left: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    left: 100%;
+    transform: translateX(0%);
+  }
+}
+    
+        </style>
+    </body>
+</html>

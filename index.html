@@ -3,34 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wisp Proxy Fetch Example</title>
+    <title>Wisp Proxy Fetch</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; }
-        button { padding: 8px 16px; margin-right: 10px; cursor: pointer; }
-        pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .controls { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        input[type="text"] { padding: 8px; width: 300px; }
+        button { padding: 8px 16px; cursor: pointer; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 5px; overflow-x: auto; max-height: 400px; }
+        #media-container { margin-top: 15px; }
+        img, video { max-width: 100%; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <h1>Wisp Proxy Fetch Client</h1>
+    <h1>Wisp Proxy Client</h1>
     
-    <button id="run-get">Fetch example.com (GET HTML)</button>
-    <button id="run-post">Fetch JSONPlaceholder (POST JSON)</button>
+    <div class="controls">
+        <input type="text" id="url-input" value="https://example.com" placeholder="Enter URL..." />
+        <button id="run-text">Fetch as Text/HTML</button>
+        <button id="run-media">Fetch as Media (MP3/Img/Video)</button>
+        <button id="run-post">Test POST</button>
+    </div>
     
-    <pre id="output">Waiting for action...</pre>
+    <div id="media-container"></div>
+    <pre id="output">Waiting...</pre>
 
     <script type="module">
         import { EpoxyClient } from "https://cdn.jsdelivr.net/npm/@mercuryworkshop/epoxy-transport@2.1.28/+esm";
 
         const output = document.getElementById("output");
+        const mediaContainer = document.getElementById("media-container");
+        const urlInput = document.getElementById("url-input");
 
         async function setupProxy() {
             try {
                 const client = new EpoxyClient("wss://wisp.mercurywork.shop/");
-                
-                if (typeof client.init === 'function') {
-                    await client.init();
-                }
-
+                if (typeof client.init === 'function') await client.init();
                 return client;
             } catch (err) {
                 output.textContent = err;
@@ -40,16 +47,57 @@
 
         const clientPromise = setupProxy();
 
-        document.getElementById("run-get").addEventListener("click", async () => {
+        document.getElementById("run-text").addEventListener("click", async () => {
+            const client = await clientPromise;
+            if (!client) return;
+            
+            output.textContent = "Fetching text...";
+            mediaContainer.innerHTML = '';
+            
+            try {
+                const response = await client.fetch(urlInput.value);
+                output.textContent = await response.text();
+            } catch (err) {
+                output.textContent = err;
+            }
+        });
+
+        document.getElementById("run-media").addEventListener("click", async () => {
             const client = await clientPromise;
             if (!client) return;
 
-            output.textContent = "Fetching https://example.com/ ...";
-            
+            output.textContent = "Fetching media...";
+            mediaContainer.innerHTML = '';
+
             try {
-                const response = await client.fetch("https://example.com/");
-                const html = await response.text();
-                output.textContent = html;
+                const response = await client.fetch(urlInput.value);
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                const contentType = response.headers.get("content-type") || "";
+
+                if (contentType.startsWith("audio/")) {
+                    const audio = document.createElement("audio");
+                    audio.controls = true;
+                    audio.src = objectUrl;
+                    mediaContainer.appendChild(audio);
+                } else if (contentType.startsWith("video/")) {
+                    const video = document.createElement("video");
+                    video.controls = true;
+                    video.src = objectUrl;
+                    mediaContainer.appendChild(video);
+                } else if (contentType.startsWith("image/")) {
+                    const img = document.createElement("img");
+                    img.src = objectUrl;
+                    mediaContainer.appendChild(img);
+                } else {
+                    const link = document.createElement("a");
+                    link.href = objectUrl;
+                    link.download = "proxied_file";
+                    link.textContent = `Download File (${contentType})`;
+                    mediaContainer.appendChild(link);
+                }
+                
+                output.textContent = `Media loaded. Content-Type: ${contentType}\nSize: ${blob.size} bytes`;
             } catch (err) {
                 output.textContent = err;
             }
@@ -59,19 +107,19 @@
             const client = await clientPromise;
             if (!client) return;
 
-            output.textContent = "Sending POST to jsonplaceholder.typicode.com...";
+            output.textContent = "Sending POST...";
+            mediaContainer.innerHTML = '';
 
             try {
-                const response = await client.fetch("https://jsonplaceholder.typicode.com/posts", {
+                const payload = JSON.stringify({ message: "Hello", wisp: true });
+                const encodedBody = new TextEncoder().encode(payload);
+
+                const response = await client.fetch("https://httpbin.org/post", {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json" 
                     },
-                    body: JSON.stringify({ 
-                        title: "Wisp Protocol Test", 
-                        body: "Proxy connection successful",
-                        userId: 1
-                    })
+                    body: encodedBody
                 });
                 
                 const json = await response.json();
